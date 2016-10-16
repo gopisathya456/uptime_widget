@@ -1,0 +1,5 @@
+name: Uptime Widget
+type: module
+description: A block showing the uptime ratio of the site using the free service from UptimeRobot.com.
+core: 8.x
+configure: uptime_widget.admin_config_uptime_widget

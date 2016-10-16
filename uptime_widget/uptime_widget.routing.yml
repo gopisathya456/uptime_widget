@@ -1,0 +1,6 @@
+uptime_widget.admin_config_uptime_widget:
+  path: '/admin/config/system/uptime_widget'
+  defaults:
+    _form: 'Drupal\uptime_widget\Form\UptimeSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

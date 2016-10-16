@@ -1,0 +1,6 @@
+uptime_widget.admin_config_uptime_widget:
+  title: Uptime Widget
+  parent: system.admin_config_development
+  route_name: uptime_widget.admin_config_uptime_widget
+  weight: 9
+  menu_name: uptime_widget

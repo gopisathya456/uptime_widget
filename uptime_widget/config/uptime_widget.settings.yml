@@ -1,0 +1,8 @@
+enabled: '1'
+next_execution: '0'
+interval: 86400
+ratio: 'NA'
+notice_enabled: '0'
+prepend: 'Copyright'
+
+

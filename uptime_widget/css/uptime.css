@@ -1,0 +1,46 @@
+table.uptime-table {
+  width: auto;
+  float: left; /* LTR */
+}
+
+table.uptime-table td {
+  padding: 2px;
+}
+
+div.uptime-wrap td.uptime-first {
+  background: Darkorange !important; /* CHANGE THE COLOR HERE */
+  text-align: center; 
+  text-shadow: Black 2px 2px 7px;
+  color: white;
+  border: solid 3px; 
+  border-color: Darkorange !important; /* CHANGE THE COLOR HERE */
+  font-weight: bold;
+}
+
+div.uptime-wrap td.uptime-last {
+  background: WhiteSmoke;
+  color: DimGray;
+  font-weight: bold;
+  border: solid 3px; 
+  border-color: Darkorange !important; /* CHANGE THE COLOR HERE */
+}
+
+div.uptime-wrap td {
+  text-align: center;
+  padding: 0 5px 0 5px;
+}
+
+caption {
+  caption-side: bottom;
+  font-size: smaller;
+  color: DimGray;
+  text-align: left;
+}
+
+.uptime-table,
+.uptime-body,
+td.uptime-notice {
+  border: 0px none !important;
+  border-collapse: separate;
+}
+
