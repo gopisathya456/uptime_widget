@@ -41,7 +41,6 @@ class UptimeSettingsForm extends ConfigFormBase {
    return ['config.admin_config_uptime_widget'];
  }
  
-
   /**
    * {@inheritdoc}
    */
@@ -49,7 +48,7 @@ class UptimeSettingsForm extends ConfigFormBase {
    $compro_custom = $this->config('config.admin_config_uptime_widget');
    $site_name = $this->config('system.site')->get('name');
    
-   $config = $this->config('uptime_widget.admin_config_uptime_widget');
+   $config = $this->config('config.admin_config_uptime_widget');
     $last_refresh = $config->get('next_execution') - $config->get('interval');
     // Execution time has to be reset to force an instant cron run.
     //$config->set('next_execution', 0);
@@ -70,7 +69,7 @@ class UptimeSettingsForm extends ConfigFormBase {
       '#type' => 'fieldset',
       '#title' => t('Uptime'),
     );
-
+kint($config);
     $form['api_settings']['uptime_enabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Enabled'),
@@ -174,7 +173,7 @@ class UptimeSettingsForm extends ConfigFormBase {
    
     $config = $this->config('config.admin_config_uptime_widget');
     
-      $config->set('enabled', $form_state->getValue('uptime_enabled'));
+      $config->set('enabled', $form_state->getValue('uptime_enabled'))->save();
       $config->set('api_key', $form_state->getValue('uptime_api_key'));
       $config->set('monitor_id', $form_state->getValue('uptime_monitor_id'));
       $config->set('prepend', $form_state->getValue('uptime_prepend'));
