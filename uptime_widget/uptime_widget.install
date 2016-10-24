@@ -16,18 +16,9 @@ function uptime_widget_install() {
       ->set('url_name', $base_url)
       ->save();
 
-  $api_url = Url::fromRoute('uptime_widget.admin_config_uptime_widget');
-  $internal_link = \Drupal::l(t('Get an API key'), $api_url);
-  $block_url = Url::fromRoute('block.admin_display');
-
-  $config_link = \Drupal::l(t('Get an API key'), $api_url);
-  $blocks_link = \Drupal::l(t('Structure > Blocks > Place the Uptime block'), $block_url);
-
-  $text = $config_link . "  and place the block at " . $blocks_link;
-
   $text = t('%config_link and place the block at %blocks_link.', array(
-    '%config_link' => \Drupal::l(t('Get an API key'), $api_url),
-    '%blocks_link' => \Drupal::l(t('Structure > Blocks > Place the Uptime block'), $block_url),
+    '%config_link' => \Drupal::l(t('Get an API key'), Url::fromRoute('uptime_widget.admin_config_uptime_widget')),
+    '%blocks_link' => \Drupal::l(t('Structure > Blocks > Place the Uptime block'), Url::fromRoute('block.admin_display')),
   ));
   drupal_set_message($text);
 }
