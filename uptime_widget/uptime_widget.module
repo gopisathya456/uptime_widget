@@ -4,7 +4,6 @@
  * @file
  * A configurable module defined block.
  */
-
 use Drupal\Core\Template\Attribute;
 
 /**
@@ -29,15 +28,17 @@ function uptime_widget_menu() {
  * UptimeRobot.com to store in the variable 'ratio' till next cron run.
  */
 function uptime_widget_cron() {
-  $interval = Drupal::config('uptime_widget.settings')->get('interval');
+  $config = \Drupal::config('config.admin_config_uptime_widget');
+
+  $interval = $config->get('interval');
   // We usually don't want to act every time cron runs (which could be every
   // minute) so keep a time for the next run in a variable.
-  if (time() >= Drupal::config('uptime_widget.settings')->get('next_execution')) {
-    $api_key = Drupal::config('uptime_widget.settings')->get('api_key');
-    $monitor_id  = Drupal::config('uptime_widget.settings')->get('monitor_id');
+  if (time() >= $config->get('next_execution')) {
+    $api_key = $config->get('api_key');
+    $monitor_id = $config->get('monitor_id');
     // Pause or activate update monitoring depending on the 'enabled' checkbox.
-    $status = Drupal::config('uptime_widget.settings')->get('enabled');
-    $url_status    = "http://api.uptimerobot.com/editMonitor?apiKey=" . $api_key . "&monitorID=" . $monitor_id . "&monitorStatus=" . $status . "&format=xml";
+    $status = $config->get('enabled');
+    $url_status = "http://api.uptimerobot.com/editMonitor?apiKey=" . $api_key . "&monitorID=" . $monitor_id . "&monitorStatus=" . $status . "&format=xml";
     // Create a new cURL resource.
     $ch = curl_init();
     // Set URL and other appropriate options.
@@ -49,12 +50,14 @@ function uptime_widget_cron() {
     curl_close($ch);
 
     // Refresh the uptime ratio.
-    $api_key = Drupal::config('uptime_widget.settings')->get('api_key');
+    $api_key = $config->get('api_key');
     if (empty($api_key)) {
-      Drupal::config('uptime_widget.settings')->set('ratio', '[Missing API key] ');
+      \Drupal::configFactory()->getEditable('config.admin_config_uptime_widget')
+          ->set('ratio', '[Missing API key] ')
+          ->save();
     }
     else {
-      $monitor_id  = Drupal::config('uptime_widget.settings')->get('monitor_id');
+      $monitor_id = $config->get('monitor_id');
       $url = "http://api.uptimerobot.com/getMonitors?apiKey=" . $api_key . "&monitors=" . $monitor_id . "&format=xml";
       // Curl request.
       $c = curl_init($url);
@@ -64,14 +67,18 @@ function uptime_widget_cron() {
       // XML parsing.
       $xml = simplexml_load_string($response_xml);
       foreach ($xml->monitor as $monitor) {
-        Drupal::config('uptime_widget.settings')->set('ratio', (string) $monitor['alltimeuptimeratio']);
+        \Drupal::configFactory()->getEditable('config.admin_config_uptime_widget')
+            ->set('ratio', (string) $monitor['alltimeuptimeratio'])
+            ->save();
       }
       // Leave a message in the log.
-      $text = 'Uptime ratio updated successfully and reported to be '. Drupal::config('uptime_widget.settings')->get('ratio') . ' %.';
-      watchdog('uptime_widget', $text);
+      $text = 'Uptime ratio updated successfully and reported to be ' . $config->get('ratio') . ' %.';
+      \Drupal::logger('uptime_widget')->notice($text);
     }
     // Set the next time this hook_cron should be invoked.
-    Drupal::config('uptime_widget.settings')->set('next_execution', time() + $interval);
+    \Drupal::configFactory()->getEditable('config.admin_config_uptime_widget')
+        ->set('next_execution', time() + $interval)
+        ->save();
   }
 }
 
@@ -79,40 +86,29 @@ function uptime_widget_cron() {
  * Implements hook_theme().
  */
 function uptime_widget_theme($existing, $type, $theme, $path) {
+
   return array(
-    'uptime_widget_fancy_block' => array(
-      'template' => 'uptime-widget-fancy-block'
+    'uptime_widget_block' => array(
+      'variables' => array('gopi' => NULL),
     ),
   );
-  /*return array('uptime_widget' =>
-    array(
-      'variables' => array(
-        'title' => 'Default title', 
-        'description' => null
-      ),
-      'template' => 'uptime-widget-fancy-block'
-    )
-  );*/
 }
 
 /**
- * Prepares variables for test block templates.
+ * Prepares variables for uptime widget block template.
  *
- * Default template: uptime-widget-fancy-block.html.twig.
- *
- * All non-renderable elements are removed so that the template has full access
- * to the structured data but can also simply iterate over all elements and
- * render them (as in the default template).
+ * Default template: uptime-widget-block.html.twig.
  *
  * @param array $variables
- *   An associative array containing the following key:
+ *   An associative array containing:
+ *   - form: A render element representing the form.
  */
-/*function template_preprocess_uptime_widget_fancy_block(&$variables) {
-  drupal_add_css(drupal_get_path('module', 'uptime_widget') . '/css/uptime.css', array('group' => CSS_AGGREGATE_DEFAULT, 'every_page' => TRUE));
-  $variables['enabled'] = Drupal::config('uptime_widget.settings')->get('enabled');
-  $variables['ratio'] = Drupal::config('uptime_widget.settings')->get('ratio');
-  $variables['notice_enabled'] = Drupal::config('uptime_widget.settings')->get('notice_enabled');
-  $variables['host'] = Drupal::config('uptime_widget.settings')->get('url_name');
-  $year = Drupal::config('uptime_widget.settings')->get('year');
-  $variables['notice'] = ' ' . Drupal::config('uptime_widget.settings')->get('prepend') . ' © ' . (($year != date('Y') && !empty($year)) ? $year . '-' . date('Y') : date('Y'));
-}*/
+function template_preprocess_uptime_widget_block(&$variables) {
+  $config = \Drupal::config('config.admin_config_uptime_widget');
+  $variables['enabled'] = $config->get('enabled');
+  $variables['ratio'] = $config->get('ratio');
+  $variables['notice_enabled'] = $config->get('notice_enabled');
+  $variables['host'] = $config->get('url_name');
+  $year = $config->get('year');
+  $variables['notice'] = ' ' . $config->get('prepend') . ' © ' . (($year != date('Y') && !empty($year)) ? $year . '-' . date('Y') : date('Y'));
+}
