@@ -78,12 +78,21 @@ function uptime_widget_cron() {
 /**
  * Implements hook_theme().
  */
-function uptime_widget_theme() {
+function uptime_widget_theme($existing, $type, $theme, $path) {
   return array(
     'uptime_widget_fancy_block' => array(
       'template' => 'uptime-widget-fancy-block'
     ),
   );
+  /*return array('uptime_widget' =>
+    array(
+      'variables' => array(
+        'title' => 'Default title', 
+        'description' => null
+      ),
+      'template' => 'uptime-widget-fancy-block'
+    )
+  );*/
 }
 
 /**
@@ -98,7 +107,7 @@ function uptime_widget_theme() {
  * @param array $variables
  *   An associative array containing the following key:
  */
-function template_preprocess_uptime_widget_fancy_block(&$variables) {
+/*function template_preprocess_uptime_widget_fancy_block(&$variables) {
   drupal_add_css(drupal_get_path('module', 'uptime_widget') . '/css/uptime.css', array('group' => CSS_AGGREGATE_DEFAULT, 'every_page' => TRUE));
   $variables['enabled'] = Drupal::config('uptime_widget.settings')->get('enabled');
   $variables['ratio'] = Drupal::config('uptime_widget.settings')->get('ratio');
@@ -106,5 +115,4 @@ function template_preprocess_uptime_widget_fancy_block(&$variables) {
   $variables['host'] = Drupal::config('uptime_widget.settings')->get('url_name');
   $year = Drupal::config('uptime_widget.settings')->get('year');
   $variables['notice'] = ' ' . Drupal::config('uptime_widget.settings')->get('prepend') . ' © ' . (($year != date('Y') && !empty($year)) ? $year . '-' . date('Y') : date('Y'));
-}
-
+}*/
